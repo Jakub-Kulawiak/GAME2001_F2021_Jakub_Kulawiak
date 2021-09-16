@@ -16,7 +16,7 @@ private:
 	// Private functions
 
 	//Expansion
-	bool Expand()
+	bool expand()
 	{
 		if(m_growSize <= 0)
 		{
@@ -74,7 +74,7 @@ public:
 		//check to see if array has space for new value, if not expands to make room
 		if (m_numElements >= m_maxSize)
 		{
-			//expand(); 
+			expand(); 
 		}
 
 		//array has enough space for new value, will be added to array
@@ -116,6 +116,7 @@ public:
 	int search(T val)
 	{
 		assert(m_array != nullptr);
+
 		//brute force search
 		for(int i = 0; i < m_numElements; i++)
 		{
