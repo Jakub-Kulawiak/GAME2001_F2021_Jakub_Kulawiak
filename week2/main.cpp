@@ -1,11 +1,13 @@
 #include <iostream>
+
+#include "OrderedArray.h"
 #include "UnorderedArray.h"
 
 using namespace std;
 
 int main()
 {
-	UnorderedArray<int> array(3);
+	OrderedArray<int> array(3);
 
 	array.push(23);
 	array.push(534);
@@ -14,9 +16,10 @@ int main()
 	array.push(32);
 
 	array[2] = 123;
+	
 
 	array.pop();
-	cout << "Unordered array contents: ";
+	cout << "ordered array contents: ";
 	for(int i = 0; i < array.getSize(); i++)
 	{
 		cout << array[i] << " ";

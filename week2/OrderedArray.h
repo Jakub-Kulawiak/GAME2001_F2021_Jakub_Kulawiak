@@ -84,7 +84,7 @@ public:
 				break;
 		}
 		//step 2 shift everything to the right of the index by one(work backwards)
-		for (k = m_numElements; k > i; k++)
+		for (k = m_numElements; k > i; k--)
 		{
 			m_array[k] = m_array[k - 1];
 		}
