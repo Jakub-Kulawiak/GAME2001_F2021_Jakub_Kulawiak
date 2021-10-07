@@ -42,7 +42,7 @@ private:
 
 public:
 
-	BaseArray(int size, int growBy = 1) :
+	BaseArray(int size) :
 	m_array(NULL), m_maxSize(0), m_numElements(0)
 	{
 		m_maxSize = size;
@@ -50,7 +50,14 @@ public:
 		memset(m_array, 0, sizeof(T) * m_maxSize); // explicitly set 0 to all elements in the array
 	}
 
-		~BaseArray() = default;
+	~BaseArray()
+	{
+		if (m_array != nullptr)
+		{
+			delete[] m_array;
+			m_array = nullptr;
+		}
+	}
 	//To be inherrited
 	//(As they're all the same function)
 	void pop()
@@ -123,6 +130,6 @@ public:
 
 	//pure virtual functions to be later declared
 	virtual void push(T val) = 0;
-	virtual void search(T search) = 0;
+	
 };
 #endif 
