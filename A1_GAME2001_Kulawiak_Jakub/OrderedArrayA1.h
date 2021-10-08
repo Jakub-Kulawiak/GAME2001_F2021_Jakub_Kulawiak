@@ -7,16 +7,58 @@ template <class T>
 class OrderedArray final : public BaseArray<T>
 {
 private:
-	T* m_array;
-	int m_interval = 1;
+	//Variables
+	T* m_array; // points to the beginning of the array
 
-public:
-	OrderedArray(int size, int growBy): m_array(NULL), BaseArray<T>(size, growBy) 
+	int m_maxSize; // Max size of the array
+	int m_growSize; // Amount the array can grow through expansion
+	int m_numElements; // Numbers of items currently in my array 
+	int m_interval = 1;
+	// Private functions
+
+	//Expansion
+	bool expand()
 	{
-		m_array = new T[this->getMaxSize()]; // Dynamically allocating an array to m_array
-		memset(m_array, 0, sizeof(T) * this->getGrowSize() ); // explicitly set 0 to all elements in the array
+		if (m_growSize <= 0)
+		{
+			//Leave!
+			return false;
+		}
+		//create new array
+		T* temp = new T[m_maxSize + m_growSize];
+		assert(temp != nullptr);
+
+		//copy the contents of the original array into the new array
+		memcpy(temp, m_array, sizeof(T) * m_maxSize);
+
+		//delete old array
+		delete[] m_array;
+
+		//clean up variable assignments
+		m_array = temp;
+		temp = nullptr; //cleans up anything dangling 
+
+		m_maxSize += pow(m_growSize, m_interval);
+		m_interval++;
+		return true;
+	}
+public:
+
+	//Constructor
+	OrderedArray(int size, int growBy = 1) :
+		m_array(NULL), m_maxSize(0), m_growSize(0), m_numElements(0)
+	{
+		if (size) // check if size is valid/legal
+		{
+			m_maxSize = size;
+			m_array = new T[m_maxSize]; // Dynamically allocating an array to m_array
+			memset(m_array, 0, sizeof(T) * m_maxSize); // explicitly set 0 to all elements in the array
+	
+			m_growSize = ((growBy > 0) ? growBy : 0); // if true sets first option, else sets it as second option
+		}
 	}
 
+	//Destructor
 	~OrderedArray()
 	{
 		if (m_array != nullptr)
@@ -26,86 +68,72 @@ public:
 		}
 	}
 
-	bool expand()
+	void sort() // added extra sort
 	{
-		if (this->getGrowSize() <= 0)
+		T temp1;
+		for(int i = 0; i <m_numElements; i++)
 		{
-			//Leave!
-			return false;
+			for(int j = i+1; j <m_numElements; j++)
+			{
+				if(m_array[i] > m_array[j]) //if i is greater than j it will swap values
+				{
+					temp1 = m_array[i];
+					m_array[i] = m_array[j];
+					m_array[j] = temp1;
+					
+				}
+			}
 		}
-		//create new array
-		T* temp = new T[this->getMaxSize() + this->getGrowSize()];
-		assert(temp != nullptr);
-
-		//copy the contents of the original array into the new array
-		memcpy(temp, m_array, sizeof(T) * this->getMaxSize());
-
-		//delete old array
-		delete[] m_array;
-
-		//clean up variable assignments
-		m_array = temp;
-		temp = nullptr; //cleans up anything dangling 
-
-		this->setMaxSize(pow(this->getGrowSize(),pow(this->getGrowSize(),m_interval)));
-		m_interval++;
-		return true;
-	}
-	
-	T& operator[](int index)
-	{
-		assert(m_array != nullptr && index < this->getNumElements());
-	
-		return m_array[index];
 	}
 
 	bool isDouble(T val)
 	{
-		if(search(val) == true)
+		if (search(val) == -1)
 		{
-			return true;
+			return false;
 		}
-		
-		return false;
+
+		return true;
 	}
 	
+	//Insertion
 	void push(T val)
 	{
 		assert(m_array != nullptr);
-		
-		if (isDouble(val) == false)
-		{
-		
-			if (this->getNumElements() >= this->getMaxSize())
+
+		if(isDouble(val) == false)
+		{ 
+			if (m_numElements >= m_maxSize)
 			{
 				expand();
 			}
 			int i, k; //i index to be inserted. k used for shifting purposes.
 
-			for (i = 0; i < this->getNumElements(); i++)
+			for (i = 0; i < m_numElements; i++)
 			{
 				if (m_array[i] > val)
 					break;
 			}
 			//step 2 shift everything to the right of the index by one(work backwards)
-			for (k = this->getNumElements(); k > i; k--)
+			for (k = m_numElements; k > i; k--)
 			{
 				m_array[k] = m_array[k - 1];
 			}
 			//step 3 insert val into array at index
 			m_array[i] = val;
 
-			this->setNumElements(this->getNumElements() - 1);
+			m_numElements++;
 			//return i;
+			sort();
 		}
 	}
 
 	//Deletion (2 ways)
 	void pop()
 	{
-		if (this->getNumElements() > 0)
+		if (m_numElements > 0)
 		{
-			this->setNumElements(this->getNumElements() - 1); //reduce the total number of elements by 1 (ignores the last element till something is added)
+			m_numElements--; //reduce the total number of elements by 1 (ignores the last element till something is added)
 		}
 	}
 	//remove an item given an index
@@ -114,20 +142,20 @@ public:
 	{
 		assert(m_array != nullptr);
 
-		if (index >= this->getNumElements())
+		if (index >= m_numElements)
 		{	//tried to remove something out of bounds of the array
 			return; // maybe should have some form of exception handling
 		}
-		for (int i = index; i < this->getNumElements(); i++)
+		for (int i = index; i < m_numElements; i++)
 		{
 			//starts at the index we want to remove.
 			//shifts everything after index back by one.
-			if (i + 1 < this->getNumElements()) // confines the loop into the array
+			if (i + 1 < m_numElements) // confines the loop into the array
 			{
 				m_array[i] = m_array[i + 1];
 			}
 		}
-		this->setNumElements(this->getNumElements() - 1);
+		m_numElements--;
 	}
 	//Searching
 	//Binary search
@@ -136,7 +164,7 @@ public:
 		assert(m_array != nullptr);
 		//helper variables
 		int lowerBound = 0;
-		int upperBound = this->getNumElements() - 1;
+		int upperBound = m_numElements - 1;
 		int current = 0;
 
 		while (1)	//this will be replaced with recursion 
@@ -168,10 +196,46 @@ public:
 		}
 		return -1; // catch all return from danger
 	}
+
+
+	//Overloaded [] operator
+	T& operator[](int index)
+	{
+		assert(m_array != nullptr && index < m_numElements);
+
+		return m_array[index];
+	}
+	//Clear
 	void clear()
 	{
-		this->setNumElements(0); //Ignores/forgets all current items in the array
+		m_numElements = 0; //Ignores/forgets all current items in the array
 	}
 
+	//Getters and Setters
+	int getMaxSize() const
+	{
+		return m_maxSize;
+	}
+
+	int getGrowSize() const
+	{
+		return m_growSize;
+	}
+
+	int getSize() const
+	{
+		return m_numElements;
+	}
+
+	void setMaxSize(int size)
+	{
+		m_maxSize = size;
+	}
+
+	void setGrowSize(int growBy)
+	{
+		assert(growBy >= 0);
+		m_growSize = growBy;
+	}
 };
 #endif

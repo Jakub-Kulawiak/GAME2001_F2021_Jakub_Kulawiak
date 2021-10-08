@@ -13,14 +13,30 @@ int main()
 	thing.push(231);
 	thing.push(543);
 	thing.push(123);
-	thing[2] = 45;
+	thing.push(34);
+	thing.push(54);
+	thing[4] = 69;
 
-	//for(int i = 0; i < thing.getNumElements(); i++)
-	//{
-	//	cout << thing[i] << " ";
-	//}
+	thing.pop();
+
+	
+	
+	for(int i = 0; i < thing.getSize(); i++)
+	{
+		cout << thing[i] << " ";
+	}
 	cout << endl;
+	
+	thing.remove(5);
 	thing.search(231);
+
+	for (int i = 0; i < thing.getSize(); i++)
+	{
+		cout << thing[i] << " ";
+	}
+	cout << endl;
+
+	cout << thing.getMaxSize() << endl;
 
 	return 0;
 }
