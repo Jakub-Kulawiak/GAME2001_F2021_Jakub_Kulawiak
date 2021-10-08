@@ -15,7 +15,7 @@ int main()
 	array.push(254);
 	array.push(32);
 
-	array[2] = 123;
+	array[0] = 123;
 	
 
 	array.pop();

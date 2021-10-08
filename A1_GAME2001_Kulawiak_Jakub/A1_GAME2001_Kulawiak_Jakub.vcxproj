@@ -142,9 +142,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OrderedArray.h" />
+    <ClInclude Include="OrderedArrayA1.h" />
     <ClInclude Include="TemplateArray.h" />
-    <ClInclude Include="UnorderedArray.h" />
+    <ClInclude Include="UnorderedArrayA1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

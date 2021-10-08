@@ -23,10 +23,10 @@
     <ClInclude Include="TemplateArray.h">
       <Filter>Class files</Filter>
     </ClInclude>
-    <ClInclude Include="OrderedArray.h">
+    <ClInclude Include="UnorderedArrayA1.h">
       <Filter>Class files</Filter>
     </ClInclude>
-    <ClInclude Include="UnorderedArray.h">
+    <ClInclude Include="OrderedArrayA1.h">
       <Filter>Class files</Filter>
     </ClInclude>
   </ItemGroup>
