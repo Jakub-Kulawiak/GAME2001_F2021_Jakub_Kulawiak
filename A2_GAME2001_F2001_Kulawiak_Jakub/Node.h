@@ -167,11 +167,10 @@ public:
 	{
 		return m_size;
 	}
-
 };
 
 template <class T>
-class PriorityQueue
+class PriorityQueue 
 {
 private:
 	LinkedList<T>* m_pList;
@@ -181,7 +180,7 @@ public:
 
 	PriorityQueue()
 	{
-		m_pList = new LinkedList<T>;
+		m_pList = new LinkedList<T>();
 	}
 	~PriorityQueue()
 	{
@@ -212,53 +211,64 @@ public:
 		assert(node != nullptr);
 		node->m_data = data;
 		node->m_priority = priority;
+		node->m_pNext = nullptr;
 
-		if (m_pList->m_pRoot == nullptr) //if empty
-		{
-			m_pList->m_pRoot = node;
-			m_pList->m_pLast = node;
-		}
-		else if(m_pList->m_pRoot != nullptr) // will search through based on priority to place the node in the list
+		if(m_pList->m_pLast != nullptr) // will search through based on priority to place the node in the list
 		{
 			LinkedIterator<T> sort;
 			//priority is ordered highest = lower value
 			for (sort = m_pList->Begin(); sort != m_pList->End(); sort++)
 			{
-				if (node->m_priority == sort.m_pNode->m_priority)
+				// if priority is higher rank
+				if(node->m_priority < sort.m_pNode->m_priority)
 				{
-					Node<T>* tempNode;
-					tempNode = sort.m_pNode->m_pNext;
-					sort.m_pNode->m_pNext = node;
-					node->m_pNext = tempNode;
-					tempNode = nullptr;
-					if(node->m_pNext == nullptr)
+					if(sort.m_pNode == m_pList->m_pRoot)
+					{
+						node->m_pNext = m_pList->m_pRoot;
+						m_pList->m_pRoot = node;
+					}
+					else
+					{
+						node->m_pNext = sort.m_pNode;
+						Node<T>* tempNode;
+						tempNode = m_pList->m_pRoot;
+						while(tempNode->m_pNext != sort.m_pNode)
+						{
+							tempNode = tempNode->m_pNext;
+						}
+						tempNode->m_pNext = node;
+						tempNode = nullptr;
+					}
+				}
+				//if priority is same rank
+				else if(node->m_priority == sort.m_pNode->m_priority)
+				{
+					if(sort.m_pNode == m_pList->m_pLast) 
 					{
 						m_pList->m_pLast = node;
 					}
-					break;
-				}
-				else if (node->m_priority < sort.m_pNode->m_priority)
-				{
-					Node<T>* tempNode = sort.m_pNode->m_pPrev;
-					node->m_pNext = sort.m_pNode;
-					sort.m_pNode->m_pPrev = node;
-					node->m_pPrev = tempNode;
-					tempNode = nullptr;
-					if(node->m_pPrev == nullptr)
+					node->m_pNext = sort.m_pNode->m_pNext;
+					sort.m_pNode->m_pNext = node;
+					if(node == m_pList->m_pLast)
 					{
-						m_pList->m_pRoot = node;
+						node->m_pNext = nullptr;
 					}
-					break;
 				}
-				else if(sort.m_pNode == m_pList->End())
+				//if lower rank
+				else
 				{
 					m_pList->m_pLast->m_pNext = node;
-					node->m_pPrev = m_pList->m_pLast;
 					m_pList->m_pLast = node;
+					node->m_pNext = nullptr;
 				}
 			}
 		}
-		m_pList->m_size = m_pList->m_size++;
+		else// if empty
+		{
+			m_pList->m_pRoot = node;
+			m_pList->m_pLast = node;
+		}
+		m_pList->m_size++;
 	}
 };
 #endif
